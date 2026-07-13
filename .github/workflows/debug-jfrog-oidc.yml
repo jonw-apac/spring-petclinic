@@ -1,0 +1,32 @@
+name: Diagnostic OIDC Debugger
+on: 
+  workflow_dispatch: # Allows you to trigger this test manually via the GitHub Actions UI
+
+jobs:
+  oidc_debug:
+    runs-on: ubuntu-latest
+    name: Check GitHub JWT Claims
+    
+    # CRITICAL: If permissions are missing, GitHub blocks OIDC token creation
+    permissions:
+      id-token: write 
+      contents: read   
+
+    steps:
+      - name: Fetch and Test OIDC Token
+        uses: actions/github-script@v7
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+        with:
+          script: |
+            // 1. Request a live OIDC ID Token from GitHub's internal runner provider
+            const id_token = await core.getIDToken();
+            
+            // 2. Execute the jf eot test command using the real token string
+            try {
+              const exec = require('@actions/exec');
+              await exec.exec('jf', ['eot', 'github-jfrog-app-provider', id_token, `--url=${process.env.JF_URL}`]);
+              core.info("✅ OIDC Token parsed and validated successfully by JFrog!");
+            } catch (error) {
+              core.setFailed(`❌ Token exchange validation failed: ${error.message}`);
+            }
