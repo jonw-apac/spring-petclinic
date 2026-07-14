@@ -20,7 +20,7 @@ jobs:
       - name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
         with:
-          oidc-provider-name: github-jfrog-app-provider
+          oidc-provider-name: jonw-apac/spring-petclinic@github
         env:
           JF_URL: https://${{ vars.JF_URL }}
 
@@ -38,7 +38,7 @@ jobs:
               console.log("Exchanging OIDC token with JFrog Platform...");
               
               // This will now execute successfully because 'jf' exists
-              const output = execSync(`jf eot github-jfrog-app-provider "${id_token}" --url="${process.env.JF_URL}"`, { encoding: 'utf-8' });
+              const output = execSync(`jf eot jonw-apac/spring-petclinic@github "${id_token}" --url="${process.env.JF_URL}"`, { encoding: 'utf-8' });
               
               console.log(output);
               core.info("✅ OIDC Token parsed and validated successfully by JFrog!");
