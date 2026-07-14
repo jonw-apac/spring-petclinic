@@ -54,7 +54,7 @@ jobs:
       -
         name: JFrog Curation Audit
         run: |
-          jf curation-audit
+          jf curation-audit --debug
       -
         name: Audit Source Code
         run: |
