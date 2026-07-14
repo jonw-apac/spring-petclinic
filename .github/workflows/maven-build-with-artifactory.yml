@@ -54,10 +54,7 @@ jobs:
       -
         name: JFrog Curation Audit
         run: |
-          jf curation-audit
-        env:
-          # This overrides the global level and prints the raw maven compilation logs
-          JFROG_CLI_LOG_LEVEL: DEBUG
+          jf curation-audit --technologies=maven
       -
         name: Audit Source Code
         run: |
