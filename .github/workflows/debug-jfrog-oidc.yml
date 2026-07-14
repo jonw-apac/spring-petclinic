@@ -16,17 +16,24 @@ jobs:
       - name: Fetch and Test OIDC Token
         uses: actions/github-script@v7
         env:
-          JF_URL: ${{ vars.JF_URL }}
+          JF_URL: https://${{ vars.JF_URL }}
         with:
           script: |
             // 1. Request a live OIDC ID Token from GitHub's internal runner provider
             const id_token = await core.getIDToken();
             
-            // 2. Execute the jf eot test command using the real token string
+            // 2. Execute the jf eot test command using Node's native child_process module
+            const { execSync } = require('child_process');
             try {
-              const exec = require('@actions/exec');
-              await exec.exec('jf', ['eot', 'github-jfrog-app-provider', id_token, `--url=${process.env.JF_URL}`]);
+              console.log("Exchanging OIDC token with JFrog Platform...");
+              
+              // Run the CLI command directly and capture console outputs
+              const output = execSync(`jf eot github-jfrog-app-provider "${id_token}" --url="${process.env.JF_URL}"`, { encoding: 'utf-8' });
+              
+              console.log(output);
               core.info("✅ OIDC Token parsed and validated successfully by JFrog!");
             } catch (error) {
-              core.setFailed(`❌ Token exchange validation failed: ${error.message}`);
+              // Print the full error payload returned from the JFrog CLI
+              core.error("JFrog CLI Output on Failure:\n" + error.stdout || error.message);
+              core.setFailed(`❌ Token exchange validation failed.`);
             }
