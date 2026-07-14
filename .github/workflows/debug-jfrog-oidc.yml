@@ -12,28 +12,39 @@ jobs:
       id-token: write 
       contents: read   
 
-    steps:
+     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Install the JFrog CLI first so the system can find the 'jf' command
+      - name: Setup JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        with:
+          oidc-provider-name: github-jfrog-app-provider
+        env:
+          JF_URL: https://${{ vars.JF_URL }}
+
+      # 2. Run the diagnostic test script now that 'jf' is installed
       - name: Fetch and Test OIDC Token
         uses: actions/github-script@v7
         env:
           JF_URL: https://${{ vars.JF_URL }}
         with:
           script: |
-            // 1. Request a live OIDC ID Token from GitHub's internal runner provider
             const id_token = await core.getIDToken();
-            
-            // 2. Execute the jf eot test command using Node's native child_process module
             const { execSync } = require('child_process');
+            
             try {
               console.log("Exchanging OIDC token with JFrog Platform...");
               
-              // Run the CLI command directly and capture console outputs
+              // This will now execute successfully because 'jf' exists
               const output = execSync(`jf eot github-jfrog-app-provider "${id_token}" --url="${process.env.JF_URL}"`, { encoding: 'utf-8' });
               
               console.log(output);
               core.info("✅ OIDC Token parsed and validated successfully by JFrog!");
             } catch (error) {
-              // Print the full error payload returned from the JFrog CLI
-              core.error("JFrog CLI Output on Failure:\n" + error.stdout || error.message);
+              // Intercept and print the real server error message from JFrog
+              const jfrogError = error.stdout || error.stderr || error.message;
+              core.error("JFrog CLI Output on Failure:\n" + jfrogError);
               core.setFailed(`❌ Token exchange validation failed.`);
             }
