@@ -65,7 +65,7 @@ jobs:
       #     # 1. Hide the Gradle file to focus exclusively on Maven
       #     if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
-      #     # 2. Force a quick validation pass to register project properties locally
+      #     # 2. Force a quick validation pass to register project properties locallyw
       #     mvn validate -B
           
       #     # 3. Trigger the curation audit with cached packages enabled
@@ -97,8 +97,8 @@ jobs:
         name: Build Docker image
         if: github.ref == 'refs/heads/main'
         run: |
-          jf docker build -t jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }} --build-arg petclinicArtifact=./target/${{ env.petclinicArtifactName }}-${{ env.petclinicVersion }}.jar .
-          jf docker push jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }} --project ${{ env.JFROG_CLI_BUILD_PROJECT }}
+          ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}
+          jf docker push jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}
       -
         name: Scan Docker image
         if: github.ref == 'refs/heads/main'
