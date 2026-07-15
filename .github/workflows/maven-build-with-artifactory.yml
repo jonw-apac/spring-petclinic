@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '26' ]
+        java: [ '21' ]
 
     steps:
       -
@@ -51,17 +51,6 @@ jobs:
           jf mvn-config --repo-resolve-releases clientapp-libs-snapshot --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release --repo-deploy-snapshots clientapp-libs-snapshot
           echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - name: Force Expose Maven Background Error
-        run: |
-          # Temporarily create the directory Maven is trying to use
-          mkdir -p /home/runner/.jfrog/curation/cache/maven/d534b27be65a9b6e6b63c8eca18b2d508079ac29
-          
-          # Force execute the exact plugin command natively to read the stack trace
-          mvn com.jfrog:maven-dep-tree:1.1.5:tree \
-            -Dmaven.repo.local=/home/runner/.jfrog/curation/cache/maven/d534b27be65a9b6e6b63c8eca18b2d508079ac29 \
-            -B
-        continue-on-error: true # Prevents this diagnostic step from breaking the runner early
-
       -
         name: JFrog Curation Audit
         run: |
