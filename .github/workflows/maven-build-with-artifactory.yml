@@ -54,7 +54,14 @@ jobs:
       -
         name: JFrog Curation Audit
         run: |
-          jf curation-audit --technologies=maven
+          # 1. Temporarily rename build.gradle if it exists so JFrog ignores it
+          if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
+          
+          # 2. Run the curation audit against the remaining pom.xml file
+          jf curation-audit
+          
+          # 3. Always restore build.gradle afterward so subsequent tasks do not break
+          if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
       -
         name: Audit Source Code
         run: |
