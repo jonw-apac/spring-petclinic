@@ -51,29 +51,21 @@ jobs:
           jf mvn-config --repo-resolve-releases clientapp-libs-snapshot --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release --repo-deploy-snapshots clientapp-libs-snapshot
           echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - 
-        name: Diagnostic - Expose Raw Maven Error
-        run: |
-          # 1. Force the creation of the exact temporary directory the CLI uses
-          mkdir -p /home/runner/.jfrog/curation/cache/maven/d534b27be65a9b6e6b63c8eca18b2d508079ac29
-          
-          # 2. Run the exact Maven plugin command natively to print the unmasked error log
-          mvn com.jfrog:maven-dep-tree:1.1.5:tree \
-            -Dmaven.repo.local=/home/runner/.jfrog/curation/cache/maven/d534b27be65a9b6e6b63c8eca18b2d508079ac29 \
-            -B
-        # This keeps the pipeline running so you can inspect the output
-        continue-on-error: true 
       -
         name: JFrog Curation Audit
         run: |
-          # 1. Temporarily rename build.gradle if it exists so JFrog ignores it
+          # 1. Hide the Gradle file to focus exclusively on Maven
           if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
-          # 2. Run the curation audit against the remaining pom.xml file
-          jf curation-audit
+          # 2. Force a quick validation pass to register project properties locally
+          mvn validate -B
           
-          # 3. Always restore build.gradle afterward so subsequent tasks do not break
+          # 3. Trigger the curation audit with cached packages enabled
+          jf curation-audit --include-cached-packages
+          
+          # 4. Restore the Gradle file
           if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
+
         env:
           JFROG_CLI_LOG_LEVEL: DEBUG
       -
