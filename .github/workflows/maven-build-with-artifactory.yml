@@ -51,6 +51,17 @@ jobs:
           jf mvn-config --repo-resolve-releases clientapp-libs-snapshot --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release --repo-deploy-snapshots clientapp-libs-snapshot
           echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - name: Diagnostic - Test JFrog Plugin Resolution
+        run: |
+          # 1. Fetch a live, authenticated Bearer token via the verified OIDC provider
+          JF_TOKEN=$(jf enterprise-token --url="${{ vars.JF_URL }}" --quiet)
+          
+          # 2. Curl the plugin path directly from your virtual/remote maven repository
+          # Replace 'maven-virtual' with the actual repository name defined in your project settings
+          echo "Testing plugin download from Artifactory..."
+          curl -i -H "Authorization: Bearer $JF_TOKEN" \
+            "${{ vars.JF_URL }}/artifactory/maven-virtual/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
+        continue-on-error: true
       -
         name: JFrog Curation Audit
         run: |
