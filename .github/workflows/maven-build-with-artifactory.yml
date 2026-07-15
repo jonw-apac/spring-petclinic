@@ -57,7 +57,7 @@ jobs:
           echo "Testing plugin download using native JFrog cURL integration..."
           
           # jf rt curl automatically authenticates using the active OIDC session context
-          jf rt curl "api/storage/clientapp-libs-release/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
+          jf rt curl "clientapp-libs-release/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
         continue-on-error: true
       -
         name: JFrog Curation Audit
