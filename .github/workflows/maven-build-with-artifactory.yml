@@ -51,6 +51,18 @@ jobs:
           jf mvn-config --repo-resolve-releases clientapp-libs-snapshot --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release --repo-deploy-snapshots clientapp-libs-snapshot
           echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      - 
+        name: Diagnostic - Expose Raw Maven Error
+        run: |
+          # 1. Force the creation of the exact temporary directory the CLI uses
+          mkdir -p /home/runner/.jfrog/curation/cache/maven/d534b27be65a9b6e6b63c8eca18b2d508079ac29
+          
+          # 2. Run the exact Maven plugin command natively to print the unmasked error log
+          mvn com.jfrog:maven-dep-tree:1.1.5:tree \
+            -Dmaven.repo.local=/home/runner/.jfrog/curation/cache/maven/d534b27be65a9b6e6b63c8eca18b2d508079ac29 \
+            -B
+        # This keeps the pipeline running so you can inspect the output
+        continue-on-error: true 
       -
         name: JFrog Curation Audit
         run: |
