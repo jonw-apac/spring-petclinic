@@ -62,6 +62,8 @@ jobs:
           
           # 3. Always restore build.gradle afterward so subsequent tasks do not break
           if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
+        env:
+          JFROG_CLI_LOG_LEVEL: DEBUG
       -
         name: Audit Source Code
         run: |
