@@ -65,11 +65,12 @@ jobs:
           # 1. Hide the Gradle file to focus exclusively on Maven
           if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
-        #  # 2. Force a quick validation pass to register project properties locallyw
-        #  # mvn validate -B
+          # 2. Recommended: Pre-resolve dependencies so Curation can intercept the tree accurately
+          ./mvnw dependency:go-offline -B
           
-        #  # 3. Trigger the curation audit with cached packages enabled
-          jf curation-audit # --include-cached-packages
+          # 3. Trigger the curation audit tied to your project workspace
+          # (Uncomment --include-cached-packages if you want to scan items already in your local .m2 cache)
+          jf curation-audit --project=${{ env.JFROG_CLI_BUILD_PROJECT }} # --include-cached-packages
           
           # 4. Restore the Gradle file
           if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
