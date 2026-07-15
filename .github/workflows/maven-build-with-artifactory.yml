@@ -93,26 +93,39 @@ jobs:
         if: github.ref == 'refs/heads/main'
         run: |
           jf mvn deploy -Dmaven.main.skip=true -Dmaven.install.skip=true -DskipTests --project ${{ env.JFROG_CLI_BUILD_PROJECT }}
+
       -
         name: Build Docker image
         if: github.ref == 'refs/heads/main'
         run: |
           ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}
-          jf docker push jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}
+
       -
-        name: Scan Docker image
+        name: Push Docker image & record build info
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # The flags here tell the CLI to attach this push to your active build workflow tracking
+          jf docker push jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }} \
+            --build-name="${{ env.JFROG_CLI_BUILD_NAME }}" --build-number="${{ env.JFROG_CLI_BUILD_NUMBER }}" --project=${{ env.JFROG_CLI_BUILD_PROJECT }}
+
+      -
+        name: Scan Docker image directly (Optional SCA)
         if: github.ref == 'refs/heads/main'
         run: |
           jf docker scan jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }} --severity='HIGH,CRITICAL' --vuln
+
       -
         name: Publish build info
         if: github.ref == 'refs/heads/main'
         run: |
+          # This registers the overall build metadata in Artifactory
           jf rt build-publish --project ${{ env.JFROG_CLI_BUILD_PROJECT }} "${{ env.JFROG_CLI_BUILD_NAME }}" "${{ env.JFROG_CLI_BUILD_NUMBER }}"
+
       -
         name: Scan build
         if: github.ref == 'refs/heads/main'
         run: |
+          # Now that the build is published and indexed, this command will succeed!
           jf build-scan --vuln --fail=false --project ${{ env.JFROG_CLI_BUILD_PROJECT }} "${{ env.JFROG_CLI_BUILD_NAME }}" "${{ env.JFROG_CLI_BUILD_NUMBER }}"
       -
         name: Create Release Bundle
