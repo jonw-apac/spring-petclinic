@@ -79,7 +79,7 @@ jobs:
       -
         name: Audit Source Code
         run: |
-          jf audit --xray=true --licenses --format=table --mvn=true
+          jf audit --licenses --format=table --mvn=true
       -
         name: Build Maven package
         run: |
