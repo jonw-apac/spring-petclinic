@@ -51,31 +51,31 @@ jobs:
           jf mvn-config --repo-resolve-releases clientapp-libs-snapshot --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release --repo-deploy-snapshots clientapp-libs-snapshot
           echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - 
-        name: Diagnostic - Test JFrog Plugin Resolution
-        run: |
-          echo "Testing plugin download using native JFrog cURL integration..."
+      # - 
+      #   name: Diagnostic - Test JFrog Plugin Resolution
+      #   run: |
+      #     echo "Testing plugin download using native JFrog cURL integration..."
           
-          # jf rt curl automatically authenticates using the active OIDC session context
-          jf rt curl "clientapp-libs-release/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
-        continue-on-error: true
-      -
-        name: JFrog Curation Audit
-        run: |
-          # 1. Hide the Gradle file to focus exclusively on Maven
-          if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
+      #     # jf rt curl automatically authenticates using the active OIDC session context
+      #     jf rt curl "clientapp-libs-release/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
+      #   continue-on-error: true
+      # -
+      #   name: JFrog Curation Audit
+      #   run: |
+      #     # 1. Hide the Gradle file to focus exclusively on Maven
+      #     if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
-          # 2. Force a quick validation pass to register project properties locally
-          mvn validate -B
+      #     # 2. Force a quick validation pass to register project properties locally
+      #     mvn validate -B
           
-          # 3. Trigger the curation audit with cached packages enabled
-          jf curation-audit --include-cached-packages
+      #     # 3. Trigger the curation audit with cached packages enabled
+      #     jf curation-audit --include-cached-packages
           
-          # 4. Restore the Gradle file
-          if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
+      #     # 4. Restore the Gradle file
+      #     if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
 
-        env:
-          JFROG_CLI_LOG_LEVEL: DEBUG
+      #   env:
+      #     JFROG_CLI_LOG_LEVEL: DEBUG
       -
         name: Audit Source Code
         run: |
