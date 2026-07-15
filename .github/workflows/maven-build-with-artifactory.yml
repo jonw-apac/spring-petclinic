@@ -54,13 +54,10 @@ jobs:
       - 
         name: Diagnostic - Test JFrog Plugin Resolution
         run: |
-          # 1. Fetch a live, authenticated Bearer token via the verified OIDC provider
-          JF_TOKEN=$(jf config show setup-jfrog-cli-server --format=json | jq -r '..accessToken')
+          echo "Testing plugin download using native JFrog cURL integration..."
           
-          # 2. Curl the plugin path directly from your virtual/remote maven repository
-          echo "Testing plugin download from Artifactory..."
-          curl -i -H "Authorization: Bearer $JF_TOKEN" \
-            "https://${{ vars.JF_URL }}/artifactory/clientapp-libs-release/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
+          # jf rt curl automatically authenticates using the active OIDC session context
+          jf rt curl "api/storage/clientapp-libs-release/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
         continue-on-error: true
       -
         name: JFrog Curation Audit
