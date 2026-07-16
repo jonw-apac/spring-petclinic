@@ -21,7 +21,7 @@ jobs:
       JFROG_CLI_BUILD_NAME: 'Petclinic from GitHub workflow'
       JFROG_CLI_BUILD_NUMBER: ${{ github.run_number }}
       JFROG_CLI_BUILD_PROJECT: ${{ vars.JF_PROJECT }}
-      JFROG_CLI_LOG_LEVEL: DEBUG
+      JFROG_CLI_LOG_LEVEL: INFO
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -52,9 +52,7 @@ jobs:
             --repo-resolve-releases clientapp-libs-release \
             --repo-resolve-snapshots clientapp-libs-snapshot \
             --repo-deploy-releases clientapp-libs-release-local \
-            --repo-deploy-snapshots clientapp-libs-snapshot-local \
-            --repo-deploy-releases clientapp-libs-release-local \
-            --repo-deploy-snapshots clientapp-libs-snapshot-local
+            --repo-deploy-snapshots clientapp-libs-snapshot-local 
           echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - 
@@ -66,13 +64,10 @@ jobs:
           # 1. Hide the Gradle file to focus exclusively on Maven
           if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
-          # 2. Recommended: Pre-resolve dependencies so Curation can intercept the tree accurately
-          # ./mvnw dependency:go-offline -B
+          # 2. Trigger the curation audit
+          jf curation-audit 
           
-          # 3. Trigger the curation audit
-          jf curation-audit #--include-cached-packages
-          
-          # 4. Restore the Gradle file
+          # 3. Restore the Gradle file
           if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
       -
         name: Audit Source Code
