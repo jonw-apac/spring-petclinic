@@ -37,7 +37,11 @@ jobs:
         with:
           java-version: ${{matrix.java}}
           distribution: 'temurin'
-          cache: maven
+      - 
+        name: Enforce Compatible Maven Version
+        uses: stefanbuck/github-action-maven-release-badge@v1
+        with:
+          maven-version: '3.8.8' # Avoids the strict read-only property block
       - 
         name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
