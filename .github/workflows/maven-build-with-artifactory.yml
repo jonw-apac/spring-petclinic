@@ -67,16 +67,13 @@ jobs:
           if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
           # 2. Recommended: Pre-resolve dependencies so Curation can intercept the tree accurately
-           ./mvnw dependency:go-offline -B
+          # ./mvnw dependency:go-offline -B
           
           # 3. Trigger the curation audit
           jf curation-audit #--include-cached-packages
           
           # 4. Restore the Gradle file
           if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
-
-        env:
-          JFROG_CLI_LOG_LEVEL: DEBUG
       -
         name: Audit Source Code
         run: |
@@ -96,7 +93,7 @@ jobs:
           jf mvn deploy -Dmaven.main.skip=true -Dmaven.install.skip=true -DskipTests --project ${{ env.JFROG_CLI_BUILD_PROJECT }}
 
       -
-        name: Build Docker imagew               
+        name: Build Docker image               
         if: github.ref == 'refs/heads/main'
         run: |
           ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=jonwonboarding2.jfrog.io/clientapp-docker/${{ env.petclinicArtifactName }}:${{ env.petclinicVersion }}
