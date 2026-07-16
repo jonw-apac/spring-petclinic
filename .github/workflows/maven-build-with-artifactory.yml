@@ -38,13 +38,6 @@ jobs:
           java-version: ${{matrix.java}}
           distribution: 'temurin'
           cache: 'maven'
-
-      - 
-        name: Set up Maven
-        uses: s4u/setup-maven-action@v1.20.0
-        with:
-          java-version: ${{matrix.java}}
-          maven-version: '3.8.6'
       - 
         name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
@@ -52,20 +45,6 @@ jobs:
           JF_URL: https://${{ vars.JF_URL }}/
         with:
           oidc-provider-name: jonw-apac/spring-petclinic@github
-      -
-        name: Configure Build
-        run: |
-          jf mvn-config --repo-resolve-releases clientapp-libs-release --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release-local --repo-deploy-snapshots clientapp-libs-snapshot-local
-          echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
-          echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-      - 
-        name: Diagnostic - Test JFrog Plugin Resolution
-        run: |
-          echo "Testing plugin download using native JFrog cURL integration..."
-          
-          # jf rt curl automatically authenticates using the active OIDC session context
-          jf rt curl "clientapp-libs-release/com/jfrog/maven-dep-tree/1.1.5/maven-dep-tree-1.1.5.pom"
-        continue-on-error: true
       -
         name: JFrog Curation Audit
         run: |
