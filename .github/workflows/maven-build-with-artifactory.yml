@@ -37,7 +37,11 @@ jobs:
         with:
           java-version: ${{matrix.java}}
           distribution: 'temurin'
-          maven-version: '3.8.8'
+      - 
+        name: Set up Maven
+        uses: stain/setup-maven@v2
+        with:
+          maven-version: '3.8.6' 
       - 
         name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
