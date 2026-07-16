@@ -48,7 +48,11 @@ jobs:
       -
         name: Configure Build
         run: |
-          jf mvn-config --repo-resolve-releases clientapp-libs-snapshot --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release --repo-deploy-snapshots clientapp-libs-snapshot
+          jf mvn-config \
+            --repo-resolve-releases clientapp-libs-release \
+            --repo-resolve-snapshots clientapp-libs-snapshot \
+            --repo-deploy-releases clientapp-libs-release-local \
+            --repo-deploy-snapshots clientapp-libs-snapshot-local
           echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
           echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
       - 
@@ -61,7 +65,7 @@ jobs:
           if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
           # 2. Recommended: Pre-resolve dependencies so Curation can intercept the tree accurately
-          # ./mvnw dependency:go-offline -B
+           ./mvnw dependency:go-offline -B
           
           # 3. Trigger the curation audit
           jf curation-audit #--include-cached-packages
