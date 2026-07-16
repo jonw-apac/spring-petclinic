@@ -38,10 +38,14 @@ jobs:
           java-version: ${{matrix.java}}
           distribution: 'temurin'
       - 
-        name: Set up Maven 3.8.8
-        uses: s4u/setup-maven-action@v1.14.0
-        with:
-          maven-version: '3.8.8' # Avoids the strict read-only property block
+        name: Install Maven 3.8.8 Manually
+        run: |
+          wget -q https://apache.org
+          tar -xzf apache-maven-3.8.8-bin.tar.gz
+          echo "$(pwd)/apache-maven-3.8.8/bin" >> $GITHUB_PATH
+      -
+        name: Verify Maven Version
+        run: mvn -v
       - 
         name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
