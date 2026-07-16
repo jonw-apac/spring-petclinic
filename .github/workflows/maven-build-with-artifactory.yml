@@ -46,6 +46,12 @@ jobs:
         with:
           oidc-provider-name: jonw-apac/spring-petclinic@github
       -
+        name: Configure Build
+        run: |
+          jf mvn-config --repo-resolve-releases clientapp-libs-snapshot --repo-resolve-snapshots clientapp-libs-snapshot --repo-deploy-releases clientapp-libs-release --repo-deploy-snapshots clientapp-libs-snapshot
+          echo "petclinicArtifactName=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)" >> $GITHUB_ENV
+          echo "petclinicVersion=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+      -
         name: JFrog Curation Audit
         run: |
           # 1. Hide the Gradle file to focus exclusively on Maven
