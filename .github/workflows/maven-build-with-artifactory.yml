@@ -37,6 +37,8 @@ jobs:
         with:
           java-version: ${{matrix.java}}
           distribution: 'temurin'
+          cache: 'maven'
+
       - 
         name: Set up Maven
         uses: s4u/setup-maven-action@v1.14.0
