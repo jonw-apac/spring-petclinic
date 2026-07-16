@@ -37,15 +37,7 @@ jobs:
         with:
           java-version: ${{matrix.java}}
           distribution: 'temurin'
-      - 
-        name: Install Maven 3.8.8 Manually
-        run: |
-          wget -q https://apache.org
-          tar -xzf apache-maven-3.8.8-bin.tar.gz
-          echo "$(pwd)/apache-maven-3.8.8/bin" >> $GITHUB_PATH
-      -
-        name: Verify Maven Version
-        run: mvn -v
+          maven-version: '3.8.8'
       - 
         name: Setup JFrog CLI
         uses: jfrog/setup-jfrog-cli@v4
