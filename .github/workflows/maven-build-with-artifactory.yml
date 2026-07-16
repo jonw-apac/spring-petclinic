@@ -65,7 +65,7 @@ jobs:
           if [ -f "build.gradle" ]; then mv build.gradle build.gradle.bak; fi
           
           # 2. Trigger the curation audit
-          jf curation-audit 
+          jf curation-audit --include-cached-packages
           
           # 3. Restore the Gradle file
           if [ -f "build.gradle.bak" ]; then mv build.gradle.bak build.gradle; fi
