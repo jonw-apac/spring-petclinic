@@ -54,7 +54,7 @@ jobs:
       - 
         name: Test Maven Dependency Tree
         run: mvn dependency:tree
-        -
+      -
         name: JFrog Curation Audit
         run: |
           # 1. Hide the Gradle file to focus exclusively on Maven
