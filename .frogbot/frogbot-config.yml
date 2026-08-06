@@ -1,4 +1,7 @@
 - params:
+    git:
+      branches:
+        - main
     installCommand: "mvn clean compile -DskipTests=true"
     workingDir: "."
     # Consolidate all dependency fixes into a single PR rather than one PR per CVE
