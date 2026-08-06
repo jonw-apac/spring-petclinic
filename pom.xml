@@ -41,7 +41,7 @@
   </properties>
 
   <dependencies>
-    <-- here to break things -->
+    <!-- here to break things -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
