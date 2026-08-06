@@ -23,3 +23,4 @@ jobs:
           JF_GIT_TOKEN: ${{ vars.GIT_TOKEN }}
         with:
           oidc-provider-name: jonw-apac/spring-petclinic@github
+          cmd: "create-fix-pull-requests"
