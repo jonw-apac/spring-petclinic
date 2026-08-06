@@ -14,11 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: frogbot
     steps:
+        # Step 1: Checkout repository to populate local .git folder
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
       - uses: jfrog/frogbot@v2
         env:
           JF_URL: ${{ vars.JF_URL }}
           JF_ACCESS_TOKEN: ${{ vars.JF_ACCESS_TOKEN }}
-          JF_GIT_TOKEN: ${{ vars.GIT_TOKEN }}
+          JF_GIT_TOKEN: ${{ vars.JF_GIT_TOKEN }}
         with:
           oidc-provider-name: jonw-apac/spring-petclinic@github
-          cmd: "create-fix-pull-requests"
