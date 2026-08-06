@@ -15,8 +15,6 @@ jobs:
     environment: frogbot
     steps:
       - uses: jfrog/frogbot@v2
-        with:
-          cmd: "create-fix-pull-requests"
         env:
           JF_URL: ${{ vars.JF_URL }}
           JF_ACCESS_TOKEN: ${{ vars.JF_ACCESS_TOKEN }}
