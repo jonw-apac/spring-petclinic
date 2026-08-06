@@ -1,0 +1,25 @@
+name: "Frogbot AutoFix"
+on:
+  schedule:
+    - cron: "0 0 * * *" # Runs daily at midnight UTC
+  workflow_dispatch: # Allows manual triggering
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  frogbot-autofix:
+    runs-on: ubuntu-latest
+    environment: frogbot
+    steps:
+      - uses: jfrog/frogbot@v2
+        with:
+          cmd: "create-fix-pull-requests"
+        env:
+          JF_URL: ${{ vars.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ vars.JF_ACCESS_TOKEN }}
+          JF_GIT_TOKEN: ${{ vars.GIT_TOKEN }}
+        with:
+          oidc-provider-name: jonw-apac/spring-petclinic@github

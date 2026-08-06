@@ -1,3 +1,7 @@
 - params:
     installCommand: "mvn clean compile -DskipTests=true"
     workingDir: "."
+    # Consolidate all dependency fixes into a single PR rather than one PR per CVE
+    aggregateFixes: true
+    # Only generate fix PRs for High or Critical vulnerabilities
+    minSeverity: "High"
